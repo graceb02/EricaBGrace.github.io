@@ -1,0 +1,1 @@
+This dice game was a great learning experience during the JavaScript course I took.  The professor provided a flow chart for how the game should work, and the html/css files.  So everything in script.js was my own work.  Thanks for checking it out!
