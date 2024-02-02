@@ -1,0 +1,1 @@
+This is a classic guess the number game.  As an assignment from a python coding course on udemy, I was asked to create the game with no hints, breakdown of the project, or flow chart.  My solution was very different from the instructor's but it appears exactly the same when played.  Fun, simple, and great practice for what I had learned up to this point.
