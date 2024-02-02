@@ -1,0 +1,1 @@
+This assignment came right after learning a "crash course" in html and css.  Really fun to get out of the console and into a webpage... learning about eventlisteners etc.
