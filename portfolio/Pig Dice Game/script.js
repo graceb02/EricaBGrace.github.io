@@ -1,78 +1,98 @@
 'use strict';
 
-///////////////////////////////////////
-// Modal window
+//selecting elements
+const player0El = document.querySelector('.player--0');
+const player1El = document.querySelector('.player--1');
+const score0El = document.querySelector('#score--0');
+const score1El = document.getElementById('score--1');
+const current0El = document.getElementById('current--0');
+const current1El = document.getElementById('current--1');
+const diceEl = document.querySelector('.dice');
+const btnNew = document.querySelector('.btn--new');
+const btnRoll = document.querySelector('.btn--roll');
+const btnHold = document.querySelector('.btn--hold');
 
-const modal = document.querySelector('.modal');
-const overlay = document.querySelector('.overlay');
-const btnCloseModal = document.querySelector('.btn--close-modal');
-const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+let scores, currentScore, activePlayer, playing;
 
-const openModal = function (e) {
-  e.preventDefault();
-  modal.classList.remove('hidden');
-  overlay.classList.remove('hidden');
+//starting conditions
+const init = function () {
+  scores = [0, 0];
+  currentScore = 0;
+  activePlayer = 0;
+  playing = true;
+
+  score0El.textContent = 0;
+  score1El.textContent = 0;
+  current0El.textContent = 0;
+  current1El.textContent = 0;
+  //reset the background
+  diceEl.classList.add('hidden');
+  player0El.classList.remove('player--winner');
+  player1El.classList.remove('player--winner');
+
+  //reset active player
+  player0El.classList.add('player--active');
+  player1El.classList.remove('player--active');
 };
 
-const closeModal = function () {
-  modal.classList.add('hidden');
-  overlay.classList.add('hidden');
+init();
+
+const switchPlayer = function () {
+  document.getElementById(`current--${activePlayer}`).textContent = 0;
+  currentScore = 0;
+  activePlayer = activePlayer === 0 ? 1 : 0; //ternary operator
+  player0El.classList.toggle('player--active');
+  player1El.classList.toggle('player--active');
 };
 
-btnsOpenModal.forEach(btn => btn.addEventListener('click', openModal));
+//rolling functionality
+btnRoll.addEventListener('click', function () {
+  if (playing) {
+    //1. Generate a random dice roll
+    const dice = Math.trunc(Math.random() * 6) + 1;
+    console.log(dice);
 
-btnCloseModal.addEventListener('click', closeModal);
-overlay.addEventListener('click', closeModal);
+    //2. display dice
+    diceEl.classList.remove('hidden');
+    diceEl.src = `dice-${dice}.png`;
 
-document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-    closeModal();
+    //3. Check for rolled 1
+    if (dice !== 1) {
+      // add dice to current score
+      currentScore += dice;
+      document.getElementById(`current--${activePlayer}`).textContent =
+        currentScore;
+    } else {
+      // switched to next player
+      switchPlayer();
+    }
   }
 });
 
-///section 186  - how to select, create, and delete elements
-///selecting elements
-console.log(document.documentElement); //selects the entire document
-console.log(document.head); //selects head
-console.log(document.body); //selects body
+//hold functionality
+btnHold.addEventListener('click', function () {
+  if (playing) {
+    //1. add current score to active player's score
+    scores[activePlayer] += currentScore;
+    document.getElementById(`score--${activePlayer}`).textContent =
+      scores[activePlayer];
 
-const header = document.querySelector('.header');
-const allSelections = document.querySelectorAll('.section');
-console.log(allSelections); // returns a list of nodes
+    //2. check if scoreis >=100
+    if (scores[activePlayer] >= 100) {
+      //finish the game
+      playing = false;
+      diceEl.classList.add('hidden');
+      document
+        .querySelector(`.player--${activePlayer}`)
+        .classList.add('player--winner');
+      document
+        .querySelector(`.player--${activePlayer}`)
+        .classList.remove('player--active');
+    } else {
+      //switch to next player
+      switchPlayer();
+    }
+  }
+});
 
-document.getElementById('section--1');
-document.getElementsByTagName('button'); //returns an HTML collection
-document.getElementsByClassName('btn'); //returns an HTML collection
-
-//creating and inserting elements
-//.insertAdjacentHTML
-
-const message = document.createElement('div'); //creating an object by class name div that represents a dom elememt
-message.classList.add('cookie-message'); //adding the class
-message.textContent =
-  'We use cookies for improved functionality and analytics.';
-message.innerHTML =
-  'We use cookies for improved functionality and analytics. <button class="btn btn--close-cookie">got it!</button>';
-
-//header.prepend(message);
-header.append(message);
-//header.append(message.cloneNode(true));
-//header.before(message);
-//header.after(message);
-
-//make the got it button work:
-document
-  .querySelector('.btn--close-cookie')
-  .addEventListener('click', function () {
-    message.remove();
-  });
-
-//styles
-message.style.backgroundColor = '#37383d';
-message.style.width = '120%';
-
-//retrieving style
-//if we set it in JS - it's called "inline"
-console.log(message.style.backgroundColor);
-//if it's not - say it's computed
-console.log(getComputedStyle(message).color);
+btnNew.addEventListener('click', init);
